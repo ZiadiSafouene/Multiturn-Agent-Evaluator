@@ -1,0 +1,7 @@
+# Environments
+.env
+myenv/
+
+# Standard Python ignore (optional but recommended)
+__pycache__/
+*.pyc
