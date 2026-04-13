@@ -1,1 +1,1 @@
-"""LLM client and prompt management."""
+"""LLM Tester and prompt management."""

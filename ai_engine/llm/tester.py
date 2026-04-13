@@ -11,9 +11,9 @@ dotenv.load_dotenv()
 logger = logging.getLogger(__name__)
 
 
-class LLMClient:
+class LLMTester:
     """
-    OpenRouter-based LLM client (free models).
+    OpenRouter-based LLM tester.
     """
 
     BASE_URL = "https://openrouter.ai/api/v1/chat/completions"
@@ -21,7 +21,7 @@ class LLMClient:
     def __init__(
         self,
         api_key: Optional[str] = os.getenv("OPENROUTER_API_KEY") ,
-        model: str = "minimax/minimax-m2.5:free",
+        model: str = "gpt-oss-120b:free",
         temperature: float = 0.2,
         max_retries: int = 3,
     ) -> None:
@@ -85,7 +85,7 @@ class LLMClient:
         return self._stub_generate(prompt)
 
     # ------------------------------------------------------------------
-    # STUB
+    # STUB (alternative if the model is not reachable)
     # ------------------------------------------------------------------
 
     @staticmethod

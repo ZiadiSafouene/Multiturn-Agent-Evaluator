@@ -124,6 +124,30 @@ class Scenario:
             "edge_cases": self.edge_cases,
             "policies": self.policies,
         }
+    def __str__(self):
+        lines = [
+            f"Scenario {self.scenario_id}: {self.title}",
+            f"  Domain: {self.domain}",
+            f"  Goal: {self.goal}",
+            f"  Description: {self.description}",
+            f"  Slots:",
+        ]
+        for slot in self.slots:
+            lines.append(f"    - {slot.name} ({slot.slot_type}, required={slot.required})")
+
+        lines.append("  States:")
+        for state in self.states:
+            lines.append(f"    - {state.state_id} (terminal={state.is_terminal}, next={state.next_states})")
+
+        lines.append("  Transitions:")
+        for t in self.transitions:
+            lines.append(f"    - {t.from_state} -> {t.to_state} (intent={t.trigger_intent})")
+
+        lines.append("  Turns:")
+        for turn in self.turns:
+            lines.append(f"    - State={turn.state}, Intent={turn.intent}, Action={turn.agent_action}")
+
+        return "\n".join(lines)
 
 
 @dataclass

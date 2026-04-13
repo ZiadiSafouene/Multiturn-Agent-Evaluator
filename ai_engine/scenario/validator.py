@@ -47,7 +47,7 @@ def validate_scenario(scenario: Scenario) -> ValidationResult:
         if s not in reachable:
             result.warn(f"Unreachable state {s}")
 
-    # dead states
+    # dead states (dead state : a state with no outgoing transition)
     for s in scenario.states:
         if not s.is_terminal:
             has_outgoing = any(t.from_state == s.state_id for t in scenario.transitions)

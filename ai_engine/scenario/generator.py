@@ -5,26 +5,14 @@ import json
 from ai_engine.scenario.parser import parse_scenario
 from ai_engine.utils.models import Scenario
 
-
-def scenario_from_dict(data: Dict[str, Any]) -> Scenario:
-    return parse_scenario(data)
-
-
-def scenario_from_json(json_str: str) -> Scenario:
-    return parse_scenario(json.loads(json_str))
-
-
-def scenario_from_file(path: str) -> Scenario:
-    with open(path, "r", encoding="utf-8") as f:
-        return parse_scenario(json.load(f))
-    
-
-from ai_engine.llm.client import LLMClient
+from ai_engine.llm.tester import LLMTester
 from ai_engine.llm.prompts import build_scenario_generation_prompt
 from ai_engine.scenario.parser import parse_scenario
 from ai_engine.scenario.validator import validate_scenario
 
 import json
+
+
 def clean_llm_output(text: str) -> str:
     text = text.strip()
 
@@ -40,6 +28,7 @@ def clean_llm_output(text: str) -> str:
     return text.strip()
 
 def extract_json_block(text: str) -> str:
+
     start = text.find("[")
     end = text.rfind("]")
 
@@ -49,7 +38,8 @@ def extract_json_block(text: str) -> str:
     return text
 
 def generate_scenarios_from_description(description: str):
-    llm = LLMClient()
+    # Tester Model 
+    llm = LLMTester()
 
     prompt = build_scenario_generation_prompt(description)
     raw_output = llm.generate(prompt)
