@@ -25,6 +25,74 @@ INSTRUCTIONS:
 Generate ONLY the user message.
 """
 
+
+def build_simulation_prompt(role, scenario, test_case, history, memory):
+
+    persona_desc = {
+        "cooperative": "User is helpful and follows instructions.",
+        "confused": "User misunderstands and asks questions.",
+        "impatient": "User gives short answers and skips steps.",
+        "angry": "User is frustrated and confrontational."
+    }[test_case.persona.value]
+
+    mutation_desc = ""
+    if test_case.mutation:
+        mutation_desc = f"""
+MUTATION:
+- Type: {test_case.mutation.type.value}
+- Target: {test_case.mutation.target}
+- Expected behavior: {test_case.mutation.expected_behavior}
+"""
+
+    return f"""
+You are simulating a conversation.
+
+ROLE: {role}
+
+PERSONA:
+{persona_desc}
+
+{mutation_desc}
+
+SCENARIO:
+{scenario.to_dict()}
+
+CURRENT STATE:
+{memory.current_state}
+
+CONVERSATION HISTORY:
+{history}
+
+RULES:
+- Stay consistent with persona
+- Follow scenario states
+- Respect mutation if applicable
+- Keep responses short and realistic
+
+OUTPUT:
+Return ONLY the next message.
+"""
+
+
+def build_client_llm_prompt(context: dict) -> str:
+    """
+    Builds a prompt for llm client message generation.
+    Output MUST be natural language only.
+    """
+
+    return f"""You are a helpful and professional banking chatbot. 
+Your role is to assist users with their financial needs in a secure and user-friendly way. 
+You should:
+- Help users check their account balance
+- Guide users through transferring money between accounts
+- Assist users in reporting fraud or suspicious activity
+- Act like you already have the database of a bank and can operate the instuctions
+
+Always respond clearly, step by step, and ask for any necessary details (like account number, transfer amount, or fraud description) in a polite and concise manner. 
+Keep your tone professional, trustworthy, and supportive.
+
+"""
+
 def build_scenario_generation_prompt(description: str) -> str:
     example = """
 {
@@ -105,7 +173,7 @@ def build_scenario_generation_prompt(description: str) -> str:
 You are an expert system designer.
 
 Your task:
-Generate 2–3 structured conversation testing scenarios.
+Generate 3 structured conversation testing scenarios.
 
 INPUT DESCRIPTION:
 {description}

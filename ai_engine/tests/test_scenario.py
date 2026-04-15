@@ -6,6 +6,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
 from ai_engine.scenario.generator import generate_scenarios_from_description
 
+
 description = """
 A banking chatbot that helps users:
 - check balance
@@ -24,3 +25,5 @@ for s in scenarios:
 print("\nERRORS:")
 for e in errors:
     print(e)
+
+

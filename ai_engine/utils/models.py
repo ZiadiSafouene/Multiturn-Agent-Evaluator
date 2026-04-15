@@ -172,6 +172,22 @@ class TestCase:
     injected_errors: list[str] = field(default_factory=list)
     metadata: dict[str, Any] = field(default_factory=dict)
 
+    def __str__(self) -> str:
+        return (
+            f"TestCase:\n"
+            f"  Test ID: {self.test_id}\n"
+            f"  Scenario ID: {self.scenario_id}\n"
+            f"  Mutation: {self.mutation if self.mutation else 'None'}\n"
+            f"  Dialect: {self.dialect}\n"
+            f"  Persona: {self.persona}\n"
+            f"  Description: {self.description}\n"
+            f"  Initial Slots: {self.initial_slots if self.initial_slots else '{}'}\n"
+            f"  Expected Outcome: {self.expected_outcome}\n"
+            f"  Expected Slots Filled: {', '.join(self.expected_slots_filled) if self.expected_slots_filled else '[]'}\n"
+            f"  Injected Errors: {', '.join(self.injected_errors) if self.injected_errors else '[]'}\n"
+            f"  Metadata: {self.metadata if self.metadata else '{}'}\n"
+        )
+
 
 # ─── Conversation Models ──────────────────────────────────────────────────────
 
