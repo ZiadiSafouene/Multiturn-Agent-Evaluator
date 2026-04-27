@@ -1,29 +1,30 @@
-def build_user_prompt(context: dict) -> str:
-    """
-    Builds a strict prompt for user message generation.
-    Output MUST be natural language only.
-    """
+def build_user_prompt(scenario, state, memory, history, mutation, persona):
+    base = f"""
+You are a USER interacting with a chatbot.
 
-    return f"""
-You are simulating a USER in a conversation.
+Current state: {state.state_id}
+Required slots: {state.required_slots}
 
-CONTEXT:
-- Intent: {context.get("intent")}
-- State: {context.get("state")}
-- Persona: {context.get("persona")}
-- Dialect: {context.get("dialect")}
-- Filled slots: {context.get("filled_slots")}
-- Mutation: {context.get("mutation")}
+Persona: {persona}
 
-INSTRUCTIONS:
-- Speak like a real human
-- Do NOT explain anything
-- Do NOT output JSON
-- Keep it short and natural
-- Follow persona behavior strictly
-
-Generate ONLY the user message.
 """
+
+    if mutation:
+        base += f"""
+IMPORTANT:
+You MUST apply this behavior:
+{mutation.description}
+
+Expected behavior:
+{mutation.expected_behavior}
+"""
+
+    base += """
+Respond as the USER only.
+Do NOT act like the agent.
+"""
+
+    return base
 
 
 def build_simulation_prompt(role, scenario, test_case, history, memory):
@@ -71,6 +72,23 @@ RULES:
 
 OUTPUT:
 Return ONLY the next message.
+"""
+
+def build_agent_prompt(scenario, state, memory, history):
+    return f"""
+You are a customer service agent.
+
+STRICT RULES:
+- Stay in current state: {state.state_id}
+- Ask ONLY for required slots: {state.required_slots}
+- Do NOT skip steps
+- Do NOT hallucinate data
+- Be concise
+
+Conversation so far:
+{history}
+
+Generate ONLY the agent response.
 """
 
 

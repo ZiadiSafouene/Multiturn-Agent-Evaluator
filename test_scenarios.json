@@ -1,0 +1,659 @@
+[
+  {
+    "scenario_id": "SCN_BAL_001",
+    "title": "Balance Inquiry with OTP Verification",
+    "description": "User requests account balance and must verify with a one‑time password.",
+    "goal": "Provide the current balance after successful OTP verification.",
+    "domain": "banking",
+    "slots": [
+      {
+        "name": "account_id",
+        "slot_type": "string",
+        "required": true,
+        "pattern": null,
+        "minvalue": null,
+        "maxvalue": null,
+        "valid_values": [],
+        "description": "",
+        "arabic_aliases": []
+      },
+      {
+        "name": "otp_code",
+        "slot_type": "string",
+        "required": true,
+        "pattern": null,
+        "minvalue": null,
+        "maxvalue": null,
+        "valid_values": [],
+        "description": "",
+        "arabic_aliases": []
+      }
+    ],
+    "states": [
+      {
+        "state_id": "collect_account",
+        "required_slots": [
+          "account_id"
+        ],
+        "expected_actions": [],
+        "next_states": [
+          "send_otp",
+          "account_not_found"
+        ],
+        "policy_checks": [
+          "account_exists"
+        ],
+        "is_terminal": false
+      },
+      {
+        "state_id": "send_otp",
+        "required_slots": [],
+        "expected_actions": [],
+        "next_states": [
+          "verify_otp"
+        ],
+        "policy_checks": [],
+        "is_terminal": false
+      },
+      {
+        "state_id": "verify_otp",
+        "required_slots": [
+          "otp_code"
+        ],
+        "expected_actions": [],
+        "next_states": [
+          "display_balance",
+          "otp_retry",
+          "otp_failure"
+        ],
+        "policy_checks": [
+          "otp_valid",
+          "otp_attempts_allowed"
+        ],
+        "is_terminal": false
+      },
+      {
+        "state_id": "otp_retry",
+        "required_slots": [],
+        "expected_actions": [],
+        "next_states": [
+          "verify_otp"
+        ],
+        "policy_checks": [],
+        "is_terminal": false
+      },
+      {
+        "state_id": "display_balance",
+        "required_slots": [],
+        "expected_actions": [],
+        "next_states": [],
+        "policy_checks": [],
+        "is_terminal": true
+      },
+      {
+        "state_id": "account_not_found",
+        "required_slots": [],
+        "expected_actions": [],
+        "next_states": [],
+        "policy_checks": [],
+        "is_terminal": true
+      },
+      {
+        "state_id": "otp_failure",
+        "required_slots": [],
+        "expected_actions": [],
+        "next_states": [],
+        "policy_checks": [],
+        "is_terminal": true
+      }
+    ],
+    "transitions": [
+      {
+        "from_state": "collect_account",
+        "to_state": "send_otp",
+        "trigger_intent": "request_balance",
+        "conditions": {
+          "account_valid": true
+        }
+      },
+      {
+        "from_state": "collect_account",
+        "to_state": "account_not_found",
+        "trigger_intent": "request_balance",
+        "conditions": {
+          "account_valid": false
+        }
+      },
+      {
+        "from_state": "send_otp",
+        "to_state": "verify_otp",
+        "trigger_intent": "otp_sent",
+        "conditions": {}
+      },
+      {
+        "from_state": "verify_otp",
+        "to_state": "display_balance",
+        "trigger_intent": "provide_otp",
+        "conditions": {
+          "otp_valid": true
+        }
+      },
+      {
+        "from_state": "verify_otp",
+        "to_state": "otp_retry",
+        "trigger_intent": "provide_otp",
+        "conditions": {
+          "otp_valid": false,
+          "attempts_left": true
+        }
+      },
+      {
+        "from_state": "verify_otp",
+        "to_state": "otp_failure",
+        "trigger_intent": "provide_otp",
+        "conditions": {
+          "otp_valid": false,
+          "attempts_left": false
+        }
+      },
+      {
+        "from_state": "otp_retry",
+        "to_state": "verify_otp",
+        "trigger_intent": "retry_otp",
+        "conditions": {}
+      }
+    ],
+    "turns": [
+      {
+        "state": "collect_account",
+        "expected_intent": "request_balance",
+        "agent_action": "ask",
+        "role": "agent",
+        "intent": "request_balance",
+        "slots_to_fill": [
+          "account_id"
+        ]
+      },
+      {
+        "state": "verify_otp",
+        "expected_intent": "provide_otp",
+        "agent_action": "ask",
+        "role": "agent",
+        "intent": "provide_otp",
+        "slots_to_fill": [
+          "otp_code"
+        ]
+      },
+      {
+        "state": "otp_retry",
+        "expected_intent": "retry_otp",
+        "agent_action": "fallback",
+        "role": "agent",
+        "intent": "retry_otp",
+        "slots_to_fill": []
+      },
+      {
+        "state": "display_balance",
+        "expected_intent": "none",
+        "agent_action": "execute",
+        "role": "agent",
+        "intent": "provide_balance",
+        "slots_to_fill": []
+      }
+    ],
+    "edge_cases": [],
+    "policies": [],
+    "metadata": {}
+  },
+  {
+    "scenario_id": "SCN_TRF_002",
+    "title": "Inter‑Account Transfer with Insufficient Funds Handling",
+    "description": "User initiates a money transfer; system checks balance, handles insufficient funds, and allows retry.",
+    "goal": "Complete a transfer when sufficient funds exist, otherwise guide user to adjust amount.",
+    "domain": "banking",
+    "slots": [
+      {
+        "name": "source_account",
+        "slot_type": "string",
+        "required": true,
+        "pattern": null,
+        "minvalue": null,
+        "maxvalue": null,
+        "valid_values": [],
+        "description": "",
+        "arabic_aliases": []
+      },
+      {
+        "name": "destination_account",
+        "slot_type": "string",
+        "required": true,
+        "pattern": null,
+        "minvalue": null,
+        "maxvalue": null,
+        "valid_values": [],
+        "description": "",
+        "arabic_aliases": []
+      },
+      {
+        "name": "transfer_amount",
+        "slot_type": "number",
+        "required": true,
+        "pattern": null,
+        "minvalue": null,
+        "maxvalue": null,
+        "valid_values": [],
+        "description": "",
+        "arabic_aliases": []
+      }
+    ],
+    "states": [
+      {
+        "state_id": "gather_transfer_details",
+        "required_slots": [
+          "source_account",
+          "destination_account",
+          "transfer_amount"
+        ],
+        "expected_actions": [],
+        "next_states": [
+          "validate_funds",
+          "invalid_destination"
+        ],
+        "policy_checks": [
+          "accounts_exist"
+        ],
+        "is_terminal": false
+      },
+      {
+        "state_id": "invalid_destination",
+        "required_slots": [],
+        "expected_actions": [],
+        "next_states": [],
+        "policy_checks": [],
+        "is_terminal": true
+      },
+      {
+        "state_id": "validate_funds",
+        "required_slots": [],
+        "expected_actions": [],
+        "next_states": [
+          "confirm_transfer",
+          "insufficient_funds"
+        ],
+        "policy_checks": [
+          "sufficient_balance"
+        ],
+        "is_terminal": false
+      },
+      {
+        "state_id": "insufficient_funds",
+        "required_slots": [],
+        "expected_actions": [],
+        "next_states": [
+          "adjust_amount",
+          "cancel_transfer"
+        ],
+        "policy_checks": [],
+        "is_terminal": false
+      },
+      {
+        "state_id": "adjust_amount",
+        "required_slots": [
+          "transfer_amount"
+        ],
+        "expected_actions": [],
+        "next_states": [
+          "validate_funds"
+        ],
+        "policy_checks": [],
+        "is_terminal": false
+      },
+      {
+        "state_id": "cancel_transfer",
+        "required_slots": [],
+        "expected_actions": [],
+        "next_states": [],
+        "policy_checks": [],
+        "is_terminal": true
+      },
+      {
+        "state_id": "confirm_transfer",
+        "required_slots": [],
+        "expected_actions": [],
+        "next_states": [
+          "execute_transfer"
+        ],
+        "policy_checks": [],
+        "is_terminal": false
+      },
+      {
+        "state_id": "execute_transfer",
+        "required_slots": [],
+        "expected_actions": [],
+        "next_states": [],
+        "policy_checks": [
+          "transfer_successful"
+        ],
+        "is_terminal": true
+      }
+    ],
+    "transitions": [
+      {
+        "from_state": "gather_transfer_details",
+        "to_state": "invalid_destination",
+        "trigger_intent": "provide_transfer",
+        "conditions": {
+          "dest_valid": false
+        }
+      },
+      {
+        "from_state": "gather_transfer_details",
+        "to_state": "validate_funds",
+        "trigger_intent": "provide_transfer",
+        "conditions": {
+          "dest_valid": true
+        }
+      },
+      {
+        "from_state": "validate_funds",
+        "to_state": "confirm_transfer",
+        "trigger_intent": "check_funds",
+        "conditions": {
+          "has_balance": true
+        }
+      },
+      {
+        "from_state": "validate_funds",
+        "to_state": "insufficient_funds",
+        "trigger_intent": "check_funds",
+        "conditions": {
+          "has_balance": false
+        }
+      },
+      {
+        "from_state": "insufficient_funds",
+        "to_state": "adjust_amount",
+        "trigger_intent": "user_adjust",
+        "conditions": {
+          "user_wants_adjust": true
+        }
+      },
+      {
+        "from_state": "insufficient_funds",
+        "to_state": "cancel_transfer",
+        "trigger_intent": "user_cancel",
+        "conditions": {
+          "user_wants_adjust": false
+        }
+      },
+      {
+        "from_state": "adjust_amount",
+        "to_state": "validate_funds",
+        "trigger_intent": "new_amount",
+        "conditions": {}
+      },
+      {
+        "from_state": "confirm_transfer",
+        "to_state": "execute_transfer",
+        "trigger_intent": "user_confirm",
+        "conditions": {}
+      }
+    ],
+    "turns": [
+      {
+        "state": "gather_transfer_details",
+        "expected_intent": "provide_transfer",
+        "agent_action": "ask",
+        "role": "agent",
+        "intent": "provide_transfer",
+        "slots_to_fill": [
+          "source_account",
+          "destination_account",
+          "transfer_amount"
+        ]
+      },
+      {
+        "state": "insufficient_funds",
+        "expected_intent": "user_adjust",
+        "agent_action": "fallback",
+        "role": "agent",
+        "intent": "user_adjust",
+        "slots_to_fill": []
+      },
+      {
+        "state": "adjust_amount",
+        "expected_intent": "new_amount",
+        "agent_action": "ask",
+        "role": "agent",
+        "intent": "new_amount",
+        "slots_to_fill": [
+          "transfer_amount"
+        ]
+      },
+      {
+        "state": "confirm_transfer",
+        "expected_intent": "user_confirm",
+        "agent_action": "confirm",
+        "role": "agent",
+        "intent": "user_confirm",
+        "slots_to_fill": []
+      },
+      {
+        "state": "execute_transfer",
+        "expected_intent": "none",
+        "agent_action": "execute",
+        "role": "agent",
+        "intent": "transfer_completed",
+        "slots_to_fill": []
+      }
+    ],
+    "edge_cases": [],
+    "policies": [],
+    "metadata": {}
+  },
+  {
+    "scenario_id": "SCN_FRD_003",
+    "title": "Fraud Reporting with Verification Loop",
+    "description": "User reports a suspicious transaction; system verifies identity, may need to retry verification, and escalates if verification fails.",
+    "goal": "Create a fraud case after successful user verification.",
+    "domain": "banking",
+    "slots": [
+      {
+        "name": "account_number",
+        "slot_type": "string",
+        "required": true,
+        "pattern": null,
+        "minvalue": null,
+        "maxvalue": null,
+        "valid_values": [],
+        "description": "",
+        "arabic_aliases": []
+      },
+      {
+        "name": "transaction_id",
+        "slot_type": "string",
+        "required": true,
+        "pattern": null,
+        "minvalue": null,
+        "maxvalue": null,
+        "valid_values": [],
+        "description": "",
+        "arabic_aliases": []
+      },
+      {
+        "name": "security_answer",
+        "slot_type": "string",
+        "required": true,
+        "pattern": null,
+        "minvalue": null,
+        "maxvalue": null,
+        "valid_values": [],
+        "description": "",
+        "arabic_aliases": []
+      }
+    ],
+    "states": [
+      {
+        "state_id": "initiate_report",
+        "required_slots": [
+          "account_number",
+          "transaction_id"
+        ],
+        "expected_actions": [],
+        "next_states": [
+          "verify_identity",
+          "invalid_account"
+        ],
+        "policy_checks": [
+          "account_exists"
+        ],
+        "is_terminal": false
+      },
+      {
+        "state_id": "invalid_account",
+        "required_slots": [],
+        "expected_actions": [],
+        "next_states": [],
+        "policy_checks": [],
+        "is_terminal": true
+      },
+      {
+        "state_id": "verify_identity",
+        "required_slots": [
+          "security_answer"
+        ],
+        "expected_actions": [],
+        "next_states": [
+          "create_case",
+          "verification_retry",
+          "escalate"
+        ],
+        "policy_checks": [
+          "answer_correct",
+          "max_verification_attempts"
+        ],
+        "is_terminal": false
+      },
+      {
+        "state_id": "verification_retry",
+        "required_slots": [],
+        "expected_actions": [],
+        "next_states": [
+          "verify_identity"
+        ],
+        "policy_checks": [],
+        "is_terminal": false
+      },
+      {
+        "state_id": "escalate",
+        "required_slots": [],
+        "expected_actions": [],
+        "next_states": [],
+        "policy_checks": [],
+        "is_terminal": true
+      },
+      {
+        "state_id": "create_case",
+        "required_slots": [],
+        "expected_actions": [],
+        "next_states": [],
+        "policy_checks": [
+          "case_created"
+        ],
+        "is_terminal": true
+      }
+    ],
+    "transitions": [
+      {
+        "from_state": "initiate_report",
+        "to_state": "invalid_account",
+        "trigger_intent": "report_fraud",
+        "conditions": {
+          "account_valid": false
+        }
+      },
+      {
+        "from_state": "initiate_report",
+        "to_state": "verify_identity",
+        "trigger_intent": "report_fraud",
+        "conditions": {
+          "account_valid": true
+        }
+      },
+      {
+        "from_state": "verify_identity",
+        "to_state": "create_case",
+        "trigger_intent": "provide_answer",
+        "conditions": {
+          "answer_correct": true
+        }
+      },
+      {
+        "from_state": "verify_identity",
+        "to_state": "verification_retry",
+        "trigger_intent": "provide_answer",
+        "conditions": {
+          "answer_correct": false,
+          "attempts_left": true
+        }
+      },
+      {
+        "from_state": "verify_identity",
+        "to_state": "escalate",
+        "trigger_intent": "provide_answer",
+        "conditions": {
+          "answer_correct": false,
+          "attempts_left": false
+        }
+      },
+      {
+        "from_state": "verification_retry",
+        "to_state": "verify_identity",
+        "trigger_intent": "retry_answer",
+        "conditions": {}
+      }
+    ],
+    "turns": [
+      {
+        "state": "initiate_report",
+        "expected_intent": "report_fraud",
+        "agent_action": "ask",
+        "role": "agent",
+        "intent": "report_fraud",
+        "slots_to_fill": [
+          "account_number",
+          "transaction_id"
+        ]
+      },
+      {
+        "state": "verify_identity",
+        "expected_intent": "provide_answer",
+        "agent_action": "ask",
+        "role": "agent",
+        "intent": "provide_answer",
+        "slots_to_fill": [
+          "security_answer"
+        ]
+      },
+      {
+        "state": "verification_retry",
+        "expected_intent": "retry_answer",
+        "agent_action": "fallback",
+        "role": "agent",
+        "intent": "retry_answer",
+        "slots_to_fill": []
+      },
+      {
+        "state": "create_case",
+        "expected_intent": "none",
+        "agent_action": "execute",
+        "role": "agent",
+        "intent": "fraud_case_created",
+        "slots_to_fill": []
+      }
+    ],
+    "edge_cases": [],
+    "policies": [],
+    "metadata": {}
+  }
+]
