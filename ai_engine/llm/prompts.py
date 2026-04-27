@@ -17,11 +17,18 @@ You MUST apply this behavior:
 
 Expected behavior:
 {mutation.expected_behavior}
+
+Mutation scope:
+- Apply this mutation briefly (1-2 turns), then resume normal cooperation.
 """
 
     base += """
 Respond as the USER only.
 Do NOT act like the agent.
+Do NOT copy agent messages.
+Do NOT stay static indefinitely.
+If there is no mutation, gradually provide missing required slots.
+If there is mutation, deviate briefly then continue normal slot filling.
 """
 
     return base
@@ -81,9 +88,17 @@ You are a customer service agent.
 STRICT RULES:
 - Stay in current state: {state.state_id}
 - Ask ONLY for required slots: {state.required_slots}
+- Request only missing required slots from current memory: {memory}
 - Do NOT skip steps
 - Do NOT hallucinate data
 - Be concise
+- Do NOT repeat identical messages
+- If user does not comply, vary phrasing
+- After repeated failures, escalate politely and explain why data is needed
+- State-driven behavior:
+  - if required slots missing: ask
+  - if ready to transition: confirm/execute
+  - if terminal: finalize
 
 Conversation so far:
 {history}

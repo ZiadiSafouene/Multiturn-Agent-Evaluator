@@ -21,7 +21,7 @@ class LLMClient:
     def __init__(
         self,
         api_key: Optional[str] = os.getenv("OPENROUTER_API_KEY") ,
-        model: str = "arcee-ai/trinity-large-preview:free",
+        model: str = "inclusionai/ling-2.6-flash:free",
         temperature: float = 0.2,
         max_retries: int = 3,
     ) -> None:

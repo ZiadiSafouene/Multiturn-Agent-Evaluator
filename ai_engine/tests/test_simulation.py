@@ -13,6 +13,7 @@ from ai_engine.llm.prompts import build_agent_prompt, build_user_prompt
 from ai_engine.llm.client import LLMClient
 from ai_engine.mutation.generator import generate_test_cases
 from ai_engine.scenario.generator import generate_scenarios_from_description
+from ai_engine.simulation.simulator import run_simulation
 
 description = """
 A banking chatbot that helps users:
@@ -87,146 +88,31 @@ llm = LLMClient()
 # ─────────────────────────────────────────────
 # 4. Run simulation
 # ─────────────────────────────────────────────
-from typing import Dict, List
-
-from ai_engine.utils.models import Scenario, TestCase
-
-
-MAX_TURNS = 5
-
-def _resolve_next_state(scenario, current_state, memory):
-    state_map = {s.state_id: s for s in scenario.states}
-    state = state_map[current_state]
-
-    # If all required slots are filled → move forward
-    if all(slot in memory for slot in state.required_slots):
-        for t in scenario.transitions:
-            if t.from_state == current_state:
-                return t.to_state
-
-    return current_state
-
-def run_simulation(
-    scenario: Scenario,
-    test_case: TestCase,
-    llm_client,
-    build_agent_prompt,
-    build_user_prompt,
-):
-    """
-    Runs controlled FSM-based simulation.
-
-    - Scenario controls flow
-    - LLM generates text ONLY
-    - Mutations injected at specific turn
-    """
-
-    state_map = {s.state_id: s for s in scenario.states}
-    current_state = scenario.states[0].state_id
-
-    memory: Dict[str, str] = {}
-    history: List[Dict] = []
-
-    turn_index = 0
-
-    while turn_index < MAX_TURNS:
-        state = state_map[current_state]
-
-        # ─────────────────────────────────────────────
-        # AGENT TURN
-        # ─────────────────────────────────────────────
-        agent_prompt = build_agent_prompt(
-            scenario=scenario,
-            state=state,
-            memory=memory,
-            history=history,
-        )
-
-        agent_msg = llm_client.generate(agent_prompt)
-
-        history.append({
-            "turn": turn_index,
-            "speaker": "agent",
-            "state": current_state,
-            "message": agent_msg,
-        })
-
-        # ─────────────────────────────────────────────
-        # TERMINATION CHECK
-        # ─────────────────────────────────────────────
-        if state.is_terminal:
-            break
-
-        # ─────────────────────────────────────────────
-        # USER TURN (WITH MUTATION)
-        # ─────────────────────────────────────────────
-        mutation = test_case.mutation
-
-        inject_mutation = (
-            mutation is not None and
-            mutation.turn_index == turn_index
-        )
-
-        user_prompt = build_user_prompt(
-            scenario=scenario,
-            state=state,
-            memory=memory,
-            history=history,
-            mutation=mutation if inject_mutation else None,
-            persona=test_case.persona,
-        )
-
-        user_msg = llm_client.generate(user_prompt)
-
-        history.append({
-            "turn": turn_index,
-            "speaker": "user",
-            "state": current_state,
-            "message": user_msg,
-            "mutation": inject_mutation,
-        })
-
-        # ─────────────────────────────────────────────
-        # STATE TRANSITION (DETERMINISTIC)
-        # ─────────────────────────────────────────────
-        next_state = _resolve_next_state(
-            scenario,
-            current_state,
-            memory
-        )
-
-        if next_state == current_state:
-            # prevent infinite loops
-            turn_index += 1
-            continue
-
-        current_state = next_state
-        turn_index += 1
-
-    return history
 
 # ─────────────────────────────────────────────
 # 5. Print conversation
 # ─────────────────────────────────────────────
-def print_simulation_log(history):
+def print_simulation_log(result):
     print("\n=== SIMULATION LOG ===\n")
+    history = result["history"]
 
     for step in history:
         print(f"[Turn {step['turn']}] ({step['state']}) {step['speaker'].upper()}:")
         print(step["message"])
-
-        if step.get("mutation"):
-            print("⚠️ Mutation injected")
-
+        print(f"Memory Snapshot: {step.get('memory_snapshot', {})}")
+        print(f"Mutation Applied: {step.get('mutation_applied', False)}")
         print("-" * 50)
 
+    print("\n=== FINAL REPORT ===\n")
+    print(json.dumps(result["summary"], indent=2))
 
-history = run_simulation(
+result = run_simulation(
     scenario,
     test_case,
     llm,
     build_agent_prompt,
     build_user_prompt,
+    max_turns=7,
 )
 
-print_simulation_log(history)
+print_simulation_log(result)
