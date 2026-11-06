@@ -1,1 +1,0 @@
-"""Scenario definition and validation."""
