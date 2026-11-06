@@ -1,8 +1,47 @@
+"""
+core.simulation.agent
+~~~~~~~~~~~~~~~~~~~~~
+
+Agent turn execution wrapper for conversational simulations.
+"""
+
+from __future__ import annotations
+
+from typing import Any
+
+from core.llm.client import LLMClient
+from core.llm.prompts import build_simulation_prompt
+from core.utils.models import Conversation, Scenario, TestCase
 
 
-from ai_engine.llm.prompts import build_client_llm_prompt, build_simulation_prompt
+def run_turn(
+    role: str,
+    scenario: Scenario,
+    test_case: TestCase,
+    conversation: Conversation,
+    llm_client: LLMClient,
+) -> str:
+    """
+    Execute a single turn for either the agent or the simulated user.
 
-def run_turn(role, scenario, test_case, conversation, llm_client):
+    Parameters
+    ----------
+    role:
+        ``"agent"`` or ``"user"``.
+    scenario:
+        Active :class:`~core.utils.models.Scenario`.
+    test_case:
+        Active :class:`~core.utils.models.TestCase`.
+    conversation:
+        Active :class:`~core.utils.models.Conversation` instance.
+    llm_client:
+        Client instance used to generate the turn message.
+
+    Returns
+    -------
+    str
+        The generated message text.
+    """
     prompt = build_simulation_prompt(
         role=role,
         scenario=scenario,
@@ -12,5 +51,4 @@ def run_turn(role, scenario, test_case, conversation, llm_client):
     )
 
     response = llm_client.generate(prompt)
-
     return response.strip()
