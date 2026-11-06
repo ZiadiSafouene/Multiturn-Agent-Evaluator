@@ -1,17 +1,37 @@
+"""
+core.scenario.parser
+~~~~~~~~~~~~~~~~~~~~
+
+Parsing utilities to construct domain dataclasses from raw dictionaries or JSON.
+"""
+
 from __future__ import annotations
+
 from typing import Any, Dict
 
-from ai_engine.utils.models import (
+from core.utils.models import (
     Scenario,
+    SlotDefinition,
     State,
     StateTransition,
-    SlotDefinition,
     TurnTemplate,
 )
 
 
 def parse_scenario(data: Dict[str, Any]) -> Scenario:
+    """
+    Parse a raw dictionary into a typed :class:`~core.utils.models.Scenario` instance.
 
+    Parameters
+    ----------
+    data:
+        Dictionary parsed from JSON scenario schema.
+
+    Returns
+    -------
+    Scenario
+        A validated Scenario dataclass instance.
+    """
     slots = [_parse_slot(s) for s in data.get("slots", [])]
     states = [_parse_state(s) for s in data.get("states", [])]
     transitions = [_parse_transition(t) for t in data.get("transitions", [])]
@@ -29,10 +49,12 @@ def parse_scenario(data: Dict[str, Any]) -> Scenario:
         turns=turns,
         edge_cases=data.get("edge_cases", []),
         policies=data.get("policies", []),
+        metadata=data.get("metadata", {}),
     )
 
 
 def _parse_slot(data: Dict[str, Any]) -> SlotDefinition:
+    aliases = data.get("aliases") or data.get("arabic_aliases") or []
     return SlotDefinition(
         name=data["name"],
         slot_type=data.get("slot_type", "string"),
@@ -42,7 +64,7 @@ def _parse_slot(data: Dict[str, Any]) -> SlotDefinition:
         maxvalue=data.get("maxvalue"),
         valid_values=data.get("valid_values", []),
         description=data.get("description", ""),
-        arabic_aliases=data.get("arabic_aliases", []),
+        aliases=aliases,
     )
 
 
@@ -70,8 +92,8 @@ def _parse_turn(data: Dict[str, Any]) -> TurnTemplate:
     return TurnTemplate(
         state=data["state"],
         expected_intent=data["expected_intent"],
-        agent_action=data["agent_action"],
+        agent_action=data.get("agent_action", "ask"),
         slots_to_fill=data.get("slots_to_fill", []),
-        role=data["role"],
-        intent=data["intent"],
+        role=data.get("role", "user"),
+        intent=data.get("intent", data.get("expected_intent", "")),
     )
