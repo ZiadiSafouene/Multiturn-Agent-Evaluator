@@ -1,4 +1,4 @@
-# AgentEval
+# multiturn-agent-eval
 
 [![PyPI version](https://img.shields.io/pypi/v/multiturn-agent-eval.svg?color=blue)](https://pypi.org/project/multiturn-agent-eval/)
 [![Python Versions](https://img.shields.io/pypi/pyversions/multiturn-agent-eval.svg)](https://pypi.org/project/multiturn-agent-eval/)
@@ -8,7 +8,7 @@
 
 A professional, production-ready framework for evaluating **multi-turn conversational AI agents**.
 
-AgentEval simulates realistic and adversarial interactions across **English, Arabic, and French**, injecting user personas and conversational anomalies (omitted slots, intent switches, policy violations, ambiguous prompts) to rigorously stress-test conversational agents before deploying them to production.
+multiturn-agent-evalsimulates realistic and adversarial interactions across **English, Arabic, and French**, injecting user personas and conversational anomalies (omitted slots, intent switches, policy violations, ambiguous prompts) to rigorously stress-test conversational agents before deploying them to production.
 
 ---
 
@@ -41,13 +41,13 @@ AgentEval simulates realistic and adversarial interactions across **English, Ara
 Install via `pip`:
 
 ```bash
-pip install agenteval
+pip install multiturn-agent-eval
 ```
 
 Or using [`uv`](https://github.com/astral-sh/uv):
 
 ```bash
-uv pip install agenteval
+uv pip install multiturn-agent-eval
 ```
 
 For development and running the test suite:
@@ -67,13 +67,13 @@ uv sync
 Run an evaluation using default free models and sample scenarios:
 
 ```bash
-agenteval evaluate --scenarios test_scenarios.json
+multiturn-agent-evalevaluate --scenarios test_scenarios.json
 ```
 
 Evaluate your own agent using your OpenRouter API key, custom system prompt, and selected languages:
 
 ```bash
-agenteval evaluate \
+multiturn-agent-evalevaluate \
   --scenarios test_scenarios.json \
   --agent-key "sk-or-v1-your-agent-key" \
   --agent-model "anthropic/claude-3.5-sonnet" \
@@ -96,7 +96,7 @@ export AGENT_MODEL="openai/gpt-4o-mini"
 export TESTER_API_KEY="sk-or-v1-tester-key..."
 export TESTER_MODEL="meta-llama/llama-3.3-70b-instruct"
 
-agenteval evaluate --scenarios test_scenarios.json --judge
+multiturn-agent-evalevaluate --scenarios test_scenarios.json --judge
 ```
 
 ---
@@ -152,7 +152,7 @@ for report in results.reports:
 
 ### 3. Scenario Synthesis from Natural Language
 
-Don't have a JSON scenario file? AgentEval can synthesize formal state-machine scenarios directly from a plain English specification:
+Don't have a JSON scenario file? multiturn-agent-evalcan synthesize formal state-machine scenarios directly from a plain English specification:
 
 ```python
 from core.orchestrator import AgentEvaluator, EvaluatorConfig
@@ -167,7 +167,7 @@ A telecommunications customer support bot that:
 - Reschedules existing appointments
 """
 
-# AgentEval automatically generates structured scenarios, states, slots, and edge cases
+# multiturn-agent-evalautomatically generates structured scenarios, states, slots, and edge cases
 results = evaluator.evaluate(spec)
 ```
 
@@ -175,7 +175,7 @@ results = evaluator.evaluate(spec)
 
 ## 📐 Evaluation Metrics & Scoring Engine
 
-AgentEval uses a balanced **dual-layer scoring methodology**:
+multiturn-agent-evaluses a balanced **dual-layer scoring methodology**:
 
 $$\text{Final Score} = 0.70 \times \text{Deterministic Score} + 0.30 \times \text{LLM Judge Score}$$
 
@@ -216,7 +216,7 @@ An independent OpenRouter model evaluates qualitative dimensions:
 ```text
 multiturn-agent-evaluator/
 ├── core/
-│   ├── cli.py                 # Command-line interface (agenteval command)
+│   ├── cli.py                 # Command-line interface (multiturn-agent-evalcommand)
 │   ├── orchestrator.py        # End-to-end evaluation pipeline
 │   ├── data/
 │   │   └── multilingual.py    # English, Arabic, and French lexical resources
