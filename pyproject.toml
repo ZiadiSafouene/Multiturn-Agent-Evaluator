@@ -3,14 +3,14 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "agenteval"
+name = "multiturn-agent-eval"
 version = "0.1.0"
 description = "A professional multi-turn conversational AI agent evaluation framework supporting English, Arabic, and French."
 readme = "README.md"
 license = { text = "MIT" }
 requires-python = ">=3.10"
 authors = [
-    { name = "Agent Evaluator Team", email = "dev@agenteval.io" }
+    { name = "Ziadi Safouene", email = "ziadisafouene@gmail.com" }
 ]
 keywords = ["ai", "evaluation", "agent", "chatbot", "testing", "llm", "openrouter", "multilingual"]
 classifiers = [
@@ -51,13 +51,11 @@ dev = [
 ]
 
 [project.scripts]
-agenteval = "core.cli:app"
+multiturn-agent-eval = "core.cli:app"
 
 [project.urls]
-Homepage = "https://github.com/agenteval/agenteval"
-Repository = "https://github.com/agenteval/agenteval"
-Documentation = "https://github.com/agenteval/agenteval#readme"
-"Bug Tracker" = "https://github.com/agenteval/agenteval/issues"
+Repository = "https://github.com/ZiadiSafouene/Multiturn-Agent-Evaluator/"
+Documentation = "https://github.com/ZiadiSafouene/Multiturn-Agent-Evaluator#readme"
 
 [tool.hatch.build.targets.wheel]
 packages = ["core"]

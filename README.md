@@ -1,7 +1,7 @@
 # AgentEval
 
-[![PyPI version](https://img.shields.io/pypi/v/agenteval.svg?color=blue)](https://pypi.org/project/agenteval/)
-[![Python Versions](https://img.shields.io/pypi/pyversions/agenteval.svg)](https://pypi.org/project/agenteval/)
+[![PyPI version](https://img.shields.io/pypi/v/multiturn-agent-eval.svg?color=blue)](https://pypi.org/project/multiturn-agent-eval/)
+[![Python Versions](https://img.shields.io/pypi/pyversions/multiturn-agent-eval.svg)](https://pypi.org/project/multiturn-agent-eval/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![uv](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/uv/main/assets/badge/v0.json)](https://github.com/astral-sh/uv)
 [![OpenRouter](https://img.shields.io/badge/LLM%20Provider-OpenRouter-purple.svg)](https://openrouter.ai/)
@@ -53,7 +53,7 @@ uv pip install agenteval
 For development and running the test suite:
 
 ```bash
-git clone https://github.com/agenteval/agenteval.git
+git clone https://github.com/ZiadiSafouene/Multiturn-Agent-Evaluator.git
 cd multiturn-agent-evaluator
 uv sync
 ```
