@@ -2,7 +2,7 @@
   {
     "scenario_id": "SCN_BAL_001",
     "title": "Balance Inquiry with OTP Verification",
-    "description": "User requests account balance and must verify with a one‑time password.",
+    "description": "User requests account balance and must verify with a oneâ€‘time password.",
     "goal": "Provide the current balance after successful OTP verification.",
     "domain": "banking",
     "slots": [
@@ -15,7 +15,13 @@
         "maxvalue": null,
         "valid_values": [],
         "description": "",
-        "arabic_aliases": []
+        "aliases": [
+          "account",
+          "numéro de compte",
+          "compte",
+          "رقم الحساب",
+          "الحساب"
+        ]
       },
       {
         "name": "otp_code",
@@ -26,7 +32,13 @@
         "maxvalue": null,
         "valid_values": [],
         "description": "",
-        "arabic_aliases": []
+        "aliases": [
+          "otp",
+          "code",
+          "code otp",
+          "رمز التحقق",
+          "رمز"
+        ]
       }
     ],
     "states": [
@@ -207,7 +219,7 @@
   },
   {
     "scenario_id": "SCN_TRF_002",
-    "title": "Inter‑Account Transfer with Insufficient Funds Handling",
+    "title": "Interâ€‘Account Transfer with Insufficient Funds Handling",
     "description": "User initiates a money transfer; system checks balance, handles insufficient funds, and allows retry.",
     "goal": "Complete a transfer when sufficient funds exist, otherwise guide user to adjust amount.",
     "domain": "banking",
@@ -221,7 +233,11 @@
         "maxvalue": null,
         "valid_values": [],
         "description": "",
-        "arabic_aliases": []
+        "aliases": [
+          "from account",
+          "compte source",
+          "من حساب"
+        ]
       },
       {
         "name": "destination_account",
@@ -232,7 +248,11 @@
         "maxvalue": null,
         "valid_values": [],
         "description": "",
-        "arabic_aliases": []
+        "aliases": [
+          "to account",
+          "compte destinataire",
+          "إلى حساب"
+        ]
       },
       {
         "name": "transfer_amount",
@@ -243,7 +263,11 @@
         "maxvalue": null,
         "valid_values": [],
         "description": "",
-        "arabic_aliases": []
+        "aliases": [
+          "amount",
+          "montant",
+          "المبلغ"
+        ]
       }
     ],
     "states": [
@@ -467,7 +491,11 @@
         "maxvalue": null,
         "valid_values": [],
         "description": "",
-        "arabic_aliases": []
+        "aliases": [
+          "account",
+          "numéro de compte",
+          "رقم الحساب"
+        ]
       },
       {
         "name": "transaction_id",
@@ -478,7 +506,11 @@
         "maxvalue": null,
         "valid_values": [],
         "description": "",
-        "arabic_aliases": []
+        "aliases": [
+          "transaction",
+          "id transaction",
+          "رقم المعاملة"
+        ]
       },
       {
         "name": "security_answer",
@@ -489,7 +521,11 @@
         "maxvalue": null,
         "valid_values": [],
         "description": "",
-        "arabic_aliases": []
+        "aliases": [
+          "answer",
+          "réponse de sécurité",
+          "جواب الأمان"
+        ]
       }
     ],
     "states": [

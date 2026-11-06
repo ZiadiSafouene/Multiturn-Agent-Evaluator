@@ -28,7 +28,7 @@ def save_scenarios_to_json(
 
 def load_scenarios_from_json(path: str) -> List[Scenario]:
     """Load scenarios from a JSON file and parse them into Scenario dataclasses."""
-    with open(path, "r", encoding="utf-8") as f:
+    with open(path, "r", encoding="utf-8-sig") as f:
         raw_list = json.load(f)
 
     if isinstance(raw_list, dict):
