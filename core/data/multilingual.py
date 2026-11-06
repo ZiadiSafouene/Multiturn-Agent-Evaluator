@@ -22,7 +22,7 @@ LANGUAGE_NAMES: Dict[Language, str] = {
     Language.ENGLISH: "English",
     Language.ARABIC: "العربية (Modern Standard Arabic)",
     Language.FRENCH: "Français",
-}1
+}
 
 AFFIRMATIVES: Dict[Language, List[str]] = {
     Language.ENGLISH: ["yes", "yeah", "correct", "sure", "confirm", "proceed", "okay"],
