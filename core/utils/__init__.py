@@ -1,1 +1,43 @@
-"""Utilities and shared models."""
+"""core.utils — shared domain models and utilities."""
+
+from core.utils.models import (
+    Language,
+    Persona,
+    MutationType,
+    EvaluationStatus,
+    SlotDefinition,
+    Mutation,
+    StateTransition,
+    TurnTemplate,
+    State,
+    Scenario,
+    Action,
+    TestCase,
+    Turn,
+    ConversationMemory,
+    Conversation,
+    DeterministicResult,
+    LLMJudgeResult,
+    EvaluationReport,
+)
+
+__all__ = [
+    "Language",
+    "Persona",
+    "MutationType",
+    "EvaluationStatus",
+    "SlotDefinition",
+    "Mutation",
+    "StateTransition",
+    "TurnTemplate",
+    "State",
+    "Scenario",
+    "Action",
+    "TestCase",
+    "Turn",
+    "ConversationMemory",
+    "Conversation",
+    "DeterministicResult",
+    "LLMJudgeResult",
+    "EvaluationReport",
+]
