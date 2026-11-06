@@ -83,7 +83,7 @@ def extract_slots_from_text(
         if slot_name in extracted or slot_name in memory:
             continue
         anchor_pattern = (
-            rf"\b{re.escape(norm_key).replace('_', r'[_\s]+')}\b"
+            rf"\b{re.escape(norm_key).replace('_', r'[_/s]+')}\b"
             rf"(?:\s*(?:is|est|هو|هي|\:|\=))?\s+([^\n,;]+)"
         )
         match = re.search(anchor_pattern, text, flags=re.IGNORECASE)

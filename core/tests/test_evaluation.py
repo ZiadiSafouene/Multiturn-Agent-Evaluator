@@ -80,3 +80,4 @@ def test_deterministic_evaluation_missing_slots(banking_scenario):
     assert eval_result.task_completed is False
     assert "otp_code" in eval_result.missing_slots
     assert eval_result.score < 70.0
+

@@ -51,3 +51,4 @@ def run_evaluation_quickstart(
 if __name__ == "__main__":
     from core.cli import app
     app()
+

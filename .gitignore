@@ -1,10 +1,30 @@
-# Environments
-.env
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Distribution / packaging
+dist/
+build/
+*.egg-info/
+
+# Virtual environments
+.venv/
+env/
+venv/
 myenv/
 
-# Standard Python ignore (optional but recommended)
-__pycache__/
-*.pyc
+# Environment variables
+.env
+.env.*
+!.env.example
 
-# Trash files 
+# Testing and linters
+.pytest_cache/
+.coverage
+htmlcov/
+.ruff_cache/
+.mypy_cache/
+
+# Trash files
 text.txt

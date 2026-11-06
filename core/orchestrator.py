@@ -311,3 +311,4 @@ class AgentEvaluator:
         with open(report_file, "w", encoding="utf-8") as f:
             json.dump(result.to_dict(), f, indent=2, ensure_ascii=False)
         logger.info("Evaluation report saved to: %s", report_file)
+

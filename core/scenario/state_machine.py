@@ -111,3 +111,4 @@ class ScenarioStateMachine:
                 if str(val).strip().lower() != str(expected).strip().lower():
                     return False
         return True
+
