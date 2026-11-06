@@ -42,6 +42,14 @@ dev = [
     "mypy>=1.10",
 ]
 
+[dependency-groups]
+dev = [
+    "pytest>=8.0",
+    "pytest-cov>=5.0",
+    "ruff>=0.4",
+    "mypy>=1.10",
+]
+
 [project.scripts]
 agenteval = "core.cli:app"
 
@@ -53,14 +61,6 @@ Documentation = "https://github.com/agenteval/agenteval#readme"
 
 [tool.hatch.build.targets.wheel]
 packages = ["core"]
-
-[tool.uv]
-dev-dependencies = [
-    "pytest>=8.0",
-    "pytest-cov>=5.0",
-    "ruff>=0.4",
-    "mypy>=1.10",
-]
 
 [tool.ruff]
 line-length = 100
@@ -79,4 +79,3 @@ testpaths = ["core/tests"]
 python_files = ["test_*.py"]
 python_classes = ["Test*"]
 python_functions = ["test_*"]
-

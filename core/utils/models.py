@@ -186,6 +186,8 @@ class Action:
 class TestCase:
     """A generated test case combining a scenario with persona, language, and mutation."""
 
+    __test__ = False  # Prevent pytest from collecting this model as a test suite
+
     test_id: str
     scenario_id: str
     mutation: Optional[Mutation]

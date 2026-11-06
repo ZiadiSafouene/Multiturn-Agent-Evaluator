@@ -79,7 +79,6 @@ def extract_slots_from_text(
 
     # 2. English / French / Arabic verbal anchors:
     # "account is 12345", "mon compte est 12345", "رقم الحساب هو 12345"
-    lowered = text.lower()
     for norm_key, slot_name in expected_map.items():
         if slot_name in extracted or slot_name in memory:
             continue
@@ -87,7 +86,7 @@ def extract_slots_from_text(
             rf"\b{re.escape(norm_key).replace('_', r'[_\s]+')}\b"
             rf"(?:\s*(?:is|est|هو|هي|\:|\=))?\s+([^\n,;]+)"
         )
-        match = re.search(anchor_pattern, lowered)
+        match = re.search(anchor_pattern, text, flags=re.IGNORECASE)
         if match:
             candidate = match.group(1).strip()
             # Clean trailing punctuation

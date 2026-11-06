@@ -1,54 +1,51 @@
-import sys
-from pathlib import Path
+"""Unit tests for mutation synthesis and test case generation."""
 
-# Add workspace root to path for imports
-sys.path.insert(0, str(Path(__file__).parent.parent.parent))
+import pytest
+from core.mutation.generator import generate_test_cases
+from core.scenario.storage import load_scenarios_from_json
+from core.utils.models import Language, Persona, MutationType
 
-from ai_engine.scenario.generator import generate_scenarios_from_description
 
-description = """
-A banking chatbot that helps users:
-- check balance
-- transfer money
-- report fraud
-"""
+@pytest.fixture
+def banking_scenario():
+    scenarios = load_scenarios_from_json("test_scenarios.json")
+    return scenarios[0]
 
-scenarios, errors = generate_scenarios_from_description(description)
 
-print("VALID:", len(scenarios))
-print("ERRORS:", errors)
+def test_generate_test_cases_defaults(banking_scenario):
+    cases = generate_test_cases(banking_scenario, num_cases=6)
+    assert len(cases) == 6
 
-# for s in scenarios:
-#     print(s)
+    # Verify that the 3 supported languages (English, Arabic, French) are used
+    languages_seen = {c.language for c in cases}
+    assert Language.ENGLISH in languages_seen
+    assert Language.ARABIC in languages_seen
+    assert Language.FRENCH in languages_seen
 
-# print("\nERRORS:")
-# for e in errors:
-#     print(e)
+    # Verify test case structure
+    for c in cases:
+        assert c.scenario_id == banking_scenario.scenario_id
+        assert isinstance(c.persona, Persona)
+        assert isinstance(c.language, Language)
+        assert c.expected_outcome in {"success", "recovery", "failure"}
 
-# ------------- Mutations ---------------
 
-from ai_engine.mutation.generator import generate_test_cases
-from ai_engine.utils.models import Dialect, Persona
-
-total_test_cases = []
-
-for s in scenarios:
-    temp_test_cases = generate_test_cases(
-        scenario=s,
-        num_cases=3,
-        dialects=[Dialect.MSA, Dialect.MIXED],  
-        personas=[
-        Persona.COOPERATIVE,
-        Persona.CONFUSED,
-        Persona.IMPATIENT,
-        Persona.ANGRY,
-    ],  
+def test_generate_test_cases_custom_languages(banking_scenario):
+    cases = generate_test_cases(
+        banking_scenario,
+        num_cases=4,
+        languages=[Language.FRENCH],
+        personas=[Persona.ANGRY],
     )
+    assert len(cases) == 4
+    for c in cases:
+        assert c.language == Language.FRENCH
+        assert c.persona == Persona.ANGRY
 
-    total_test_cases.extend(temp_test_cases)
 
-print("\n Test Cases after mutation:")
-print("\n Nb Mutations : ",len(total_test_cases))
-
-for i in total_test_cases: 
-    print("\n",i)
+def test_mutation_types_represented(banking_scenario):
+    cases = generate_test_cases(banking_scenario, num_cases=12)
+    mutations = [c.mutation for c in cases if c.mutation is not None]
+    assert len(mutations) > 0
+    mutation_types = {m.type for m in mutations}
+    assert any(isinstance(mt, MutationType) for mt in mutation_types)
